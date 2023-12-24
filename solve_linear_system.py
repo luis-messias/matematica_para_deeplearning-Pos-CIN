@@ -67,12 +67,29 @@ def solve_linar_system(a, b, verbose = False):
     
     return b
 
-a = np.array([[0,2,3],
-              [2,3,45],
-              [33,5,6]], dtype="float")
-b = np.array([[1],
-              [2],
-              [3]], dtype="float")
+if __name__ == "__main__":
+    a = np.array([[0,2,3],
+                [2,3,45],
+                [33,5,6]], dtype="float")
+    b = np.array([[1],
+                [2],
+                [3]], dtype="float")
 
-x = solve_linar_system(a, b, verbose = True)
-print(a @ x - b)
+    x = solve_linar_system(a, b, verbose = True)
+    print(a @ x - b)
+    print()
+
+    a = np.array([[2, -.3, 4, 1, 0],
+                [7, -2, 4, 3, 311],
+                [5, 1, 0, 2, 333],
+                [-11, -7, 8, 0, -3],
+                [-1, -7, 8, 0, -22]], dtype="float")
+    b = np.array([[1],
+                [2],
+                [3],
+                [4],
+                [5]], dtype="float")
+
+    x = solve_linar_system(a, b, verbose = False)
+    print_linear_system(a, b)
+    print(a @ x - b)
