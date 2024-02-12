@@ -136,7 +136,8 @@ class Quadratic_Loss():
         return (Y_hat - Y)
 
 def get_data():
-    X = np.array([[-1],[-2],[-3],[-4],[-5],[-6],[-7],[-8],[-9], [1],[2],[3],[4],[5],[6],[7],[8],[9]])/10
+    X = np.linspace(-1, 1, 20)
+    X.shape =  X.shape[0] , 1
     Y = X**3 + X**2
     return X, Y
 
@@ -154,10 +155,10 @@ if __name__ == "__main__":
     for index in range(30000):
         error = 0
         for i in range(X.shape[0]):    
-            x = X[i]
-            x.shape = (1,1)
-            y = Y[i]
-            y.shape = (1,1)
+            x = np.array(X[i], ndmin=2)
+            # x.shape = (1,1)
+            y = np.array(Y[i], ndmin=2)
+            # y.shape = (1,1)
 
             x_i = x
             for j in range(len(model)):
