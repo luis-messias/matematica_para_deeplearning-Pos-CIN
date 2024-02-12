@@ -25,19 +25,21 @@ class LinearLayer():
     def reset_grad(self):        
         self.A_grad = np.zeros([self.output_size, self.input_size])
         self.B_grad = np.zeros([self.output_size, 1])
+        self.grad_num = 0
     
     def backward(self, DL_DY):
         #DL/DA = DL/DY * DY/DA
-        print(DL_DY)
-        print(self.X)
-        self.A_grad += DL_DY @ self.X
+        if DL_DY.ndim == 1:
+            DL_DY = np.column_stack(DL_DY)
+        self.A_grad += (self.X @ DL_DY.T).T
         self.B_grad += DL_DY
-        self.X_grad = DL_DY @ self.A 
+        self.X_grad = (DL_DY.T @ self.A).T
         self.grad_num += 1
+        return self.X_grad
 
-    def update(self, learning_rate):
-        self.A -= self.A_grad * learning_rate/self.grad_num
-        self.B -= self.B_grad * learning_rate/self.grad_num
+    def update(self, learning_rate): 
+        self.A -= self.A_grad * learning_rate
+        self.B -= self.B_grad * learning_rate
 
 class ReLU():
     """
@@ -93,10 +95,10 @@ def get_data():
 if __name__ == "__main__":
     X, Y = get_data()
     Y_hat = np.zeros(Y.shape)       
-
-    model = [LinearLayer(1,1)]
+    # model = [LinearLayer(1,1)]
+    model = [LinearLayer(1,2),LinearLayer(2,1)]
     loss = Quadratic_Loss()
-    learning_rate = 0.03
+    learning_rate = 0.00003
     errors = []
     for index in range(500):
         error = 0
@@ -115,13 +117,16 @@ if __name__ == "__main__":
         for i in range(X.shape[0]):    
             DL_DY = loss.backward()
             DL_Yi = DL_DY[i]
-            for i in range(len(model), 0, -1):
+            for j in range(len(model) - 1, -1, -1):
                 DL_Yi = model[j].backward(DL_Yi)
-        model[0].update(learning_rate)        
+    
+        for j in range(len(model)):
+            model[j].update(learning_rate)        
+            model[j].reset_grad()
+
         print("Loss: ", error)
-        # print(model[0].A_grad, model[0].B_grad)
-        model[0].reset_grad()
         errors.append(error)
+        # input()
 
     plt.plot(errors)
     plt.show()
