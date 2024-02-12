@@ -96,8 +96,9 @@ if __name__ == "__main__":
 
     model = [LinearLayer(1,1)]
     loss = Quadratic_Loss()
-    learning_rate = 0.2
-    for index in range(10000):
+    learning_rate = 0.03
+    errors = []
+    for index in range(500):
         error = 0
         for i in range(X.shape[0]):    
             x = X[i]
@@ -120,8 +121,12 @@ if __name__ == "__main__":
         print("Loss: ", error)
         # print(model[0].A_grad, model[0].B_grad)
         model[0].reset_grad()
+        errors.append(error)
 
-        
+    plt.plot(errors)
+    plt.show()
+
+    plt.clf()
     plt.plot(X, Y) 
     plt.plot(X, Y_hat, 'bo')
 
