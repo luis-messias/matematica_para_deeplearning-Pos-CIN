@@ -10,10 +10,10 @@ class LinearLayer():
         self.output_size = output_size
 
         self.X = np.zeros([self.output_size, 1])
-        self.A = np.random.rand(self.output_size, self.input_size)
+        self.A = np.random.rand(self.output_size, self.input_size) - np.array(0.5)
         self.B = np.random.rand(self.output_size, 1)
 
-        self.A_grad = np.zeros([self.output_size, self.input_size])
+        self.A_grad = np.zeros([self.output_size, self.input_size]) - np.array(0.5)
         self.B_grad = np.zeros([self.output_size, 1])
         self.X_grad = np.zeros([self.output_size, 1])
         self.grad_num = 0
@@ -62,12 +62,11 @@ class ReLU():
         self.X_grad = np.zeros(self.X.shape)
 
     def backward(self, DL_DY):
-        self.X_grad = DL_DY  
-        for i in range(self.X.shape[1]):
-            if self.X[0][i] <= 0:
-                self.X_grad[1][i] = 0
-            else:
-                self.X_grad[1][i] = 1
+        self.X_grad = np.heaviside(self.X, 1) * DL_DY
+        return self.X_grad
+    
+    def update(self, learning_rate): 
+        pass
 
 
 class Quadratic_Loss():
@@ -83,12 +82,12 @@ class Quadratic_Loss():
             self.loss += 0.5 * (Y_hat[i] - Y[i]) ** 2
         return self.loss
 
-    def backward(self):
+    def backward(self, Y_hat, Y):
         return (Y_hat - Y)
 
 def get_data():
-    X = np.array([[1],[2],[3],[4],[5],[6],[7],[8],[9]])
-    Y = X * 10 + 2
+    X = np.array([[-1],[-2],[-3],[-4],[-5],[-6],[-7],[-8],[-9], [1],[2],[3],[4],[5],[6],[7],[8],[9]])/10
+    Y = 10*X**2 +10*X
     return X, Y
 
 
@@ -96,11 +95,12 @@ if __name__ == "__main__":
     X, Y = get_data()
     Y_hat = np.zeros(Y.shape)       
     # model = [LinearLayer(1,1)]
-    model = [LinearLayer(1,2),LinearLayer(2,1)]
+    # model = [LinearLayer(1,2),LinearLayer(2,1)]
+    model = [LinearLayer(1,20),ReLU(),LinearLayer(20,3),ReLU(),LinearLayer(3,1)]
     loss = Quadratic_Loss()
-    learning_rate = 0.00003
+    learning_rate = 0.00001
     errors = []
-    for index in range(500):
+    for index in range(100000):
         error = 0
         for i in range(X.shape[0]):    
             x = X[i]
@@ -114,25 +114,27 @@ if __name__ == "__main__":
             Y_hat[i] = x_i
             error += loss.forward(Y_hat[i], y)
 
-        for i in range(X.shape[0]):    
-            DL_DY = loss.backward()
-            DL_Yi = DL_DY[i]
-            for j in range(len(model) - 1, -1, -1):
-                DL_Yi = model[j].backward(DL_Yi)
+            #TODO FIX ME
+            DL_Yj = loss.backward(Y_hat[i], y)
+            for j in reversed(range(len(model))):
+                DL_Yj = model[j].backward(DL_Yj)
     
         for j in range(len(model)):
             model[j].update(learning_rate)        
             model[j].reset_grad()
-
+        # print( model[4].A)
         print("Loss: ", error)
         errors.append(error)
+
+        if np.isnan(error):
+            break
         # input()
 
     plt.plot(errors)
     plt.show()
 
     plt.clf()
-    plt.plot(X, Y) 
-    plt.plot(X, Y_hat, 'bo')
+    plt.plot(X, Y, 'bo') 
+    plt.plot(X, Y_hat, 'yo')
 
     plt.show()
