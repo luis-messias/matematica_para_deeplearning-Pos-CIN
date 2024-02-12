@@ -68,6 +68,32 @@ class ReLU():
     def update(self, learning_rate): 
         pass
 
+class ReLU_mod():
+    """
+    Function yi = xi, if xi > 0
+             yi = 0, if xi <= 0
+    """
+    def __init__(self) -> None:
+        pass
+
+    def forward(self, X):
+        self.X = X
+        self.X_grad = np.zeros(self.X.shape)
+        Y = X
+        for i in range(x.shape[1]):
+            if X[0][i] <= 0:
+                Y[0][i] = Y[0][i]*0.1
+        return Y
+
+    def reset_grad(self):
+        self.X_grad = np.zeros(self.X.shape)
+
+    def backward(self, DL_DY):
+        self.X_grad = (np.heaviside(self.X, 1)*1.1 - 0.1) * DL_DY 
+        return self.X_grad
+    
+    def update(self, learning_rate): 
+        pass
 
 class Quadratic_Loss():
     """
@@ -87,20 +113,21 @@ class Quadratic_Loss():
 
 def get_data():
     X = np.array([[-1],[-2],[-3],[-4],[-5],[-6],[-7],[-8],[-9], [1],[2],[3],[4],[5],[6],[7],[8],[9]])/10
-    Y = 10*X**2 +10*X
+    Y = 10*X**2 
     return X, Y
 
 
 if __name__ == "__main__":
+    np.random.seed(42)
     X, Y = get_data()
     Y_hat = np.zeros(Y.shape)       
     # model = [LinearLayer(1,1)]
     # model = [LinearLayer(1,2),LinearLayer(2,1)]
-    model = [LinearLayer(1,20),ReLU(),LinearLayer(20,3),ReLU(),LinearLayer(3,1)]
+    model = [LinearLayer(1,100),ReLU_mod(),LinearLayer(100,3),ReLU_mod(),LinearLayer(3,1)]
     loss = Quadratic_Loss()
-    learning_rate = 0.00001
+    learning_rate = 0.0001
     errors = []
-    for index in range(100000):
+    for index in range(10000):
         error = 0
         for i in range(X.shape[0]):    
             x = X[i]
