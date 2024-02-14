@@ -136,9 +136,12 @@ class Quadratic_Loss():
         return (Y_hat - Y)
 
 def get_data():
-    X = np.linspace(-1, 1, 20)
+    X = np.linspace(-2, 2, 50)
     X.shape =  X.shape[0] , 1
-    Y = X**3 + X**2
+    # Y = X**3 + X**2
+    # Y = (X-2)*(X+2)*X
+    # Y = np.sin(X)
+    Y = np.sin(5*X)
     return X, Y
 
 
@@ -148,11 +151,12 @@ if __name__ == "__main__":
     Y_hat = np.zeros(Y.shape)       
     # model = [LinearLayer(1,1)]
     # model = [LinearLayer(1,2),LinearLayer(2,1)]
-    model = [LinearLayer(1,100),Tanh(),LinearLayer(100,3),Tanh(),LinearLayer(3,1)]
+    model = [LinearLayer(1,200),Tanh(),LinearLayer(200,200),Tanh(),LinearLayer(200,1)]
+    # model = [LinearLayer(1,100),Tanh(),LinearLayer(100,10),Tanh(),LinearLayer(10,3),Tanh(),LinearLayer(3,3),Tanh(),LinearLayer(3,1)]
     loss = Quadratic_Loss()
-    learning_rate = 0.0001
+    learning_rate = 0.00011
     errors = []
-    for index in range(30000):
+    for index in range(10000):
         error = 0
         for i in range(X.shape[0]):    
             x = np.array(X[i], ndmin=2)
@@ -166,7 +170,6 @@ if __name__ == "__main__":
             Y_hat[i] = x_i
             error += loss.forward(Y_hat[i], y)
 
-            #TODO FIX ME
             DL_Yj = loss.backward(Y_hat[i], y)
             for j in reversed(range(len(model))):
                 DL_Yj = model[j].backward(DL_Yj)
@@ -175,7 +178,8 @@ if __name__ == "__main__":
             model[j].update(learning_rate)        
             model[j].reset_grad()
         # print( model[4].A)
-        print("Loss: ", error)
+        if index % 1000 == 0:
+            print("Loss: ", error, " Index: ", index)
         errors.append(error)
 
         if np.isnan(error):
