@@ -17,7 +17,7 @@ def swap_line(matrix, i, j):
     matrix[i], matrix[j] =  matrix[j].copy(), matrix[i].copy()
     return matrix
 
-def solve_linar_system(a, b, verbose = False):
+def solve_linear_system(a, b, verbose = False):
     if verbose:
         print("System to solve")
         print_linear_system(a, b)
@@ -75,7 +75,7 @@ if __name__ == "__main__":
                 [2],
                 [3]], dtype="float")
 
-    x = solve_linar_system(a, b, verbose = True)
+    x = solve_linear_system(a, b, verbose = True)
     print(a @ x - b)
     print()
 
@@ -90,6 +90,6 @@ if __name__ == "__main__":
                 [4],
                 [5]], dtype="float")
 
-    x = solve_linar_system(a, b, verbose = False)
+    x = solve_linear_system(a, b, verbose = False)
     print_linear_system(a, b)
     print(a @ x - b)
