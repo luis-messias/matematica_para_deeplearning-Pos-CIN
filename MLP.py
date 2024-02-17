@@ -129,7 +129,23 @@ class Quadratic_Loss():
 
     def backward(self, Y_hat, Y):
         return (Y_hat - Y)
+    
+class L4_Loss():
+    """
+    Loss
+    """
+    def __init__(self) -> None:
+        pass
 
+    def forward(self, Y_hat, Y):
+        self.loss = 0
+        for i in range(Y.shape[0]):
+            self.loss += (1/4) * (Y_hat[i] - Y[i]) ** 4
+        return self.loss
+
+    def backward(self, Y_hat, Y):
+        return (Y_hat - Y)**3
+    
 def get_data():
     X = np.linspace(-2, 2, 50)
     X.shape =  X.shape[0] , 1
@@ -146,18 +162,18 @@ if __name__ == "__main__":
     Y_hat = np.zeros(Y.shape)       
     # model = [LinearLayer(1,1)]
     # model = [LinearLayer(1,2),LinearLayer(2,1)]
-    model = [LinearLayer(1,200),ReLU_mod(),LinearLayer(200,200),Tanh(),LinearLayer(200,1)]
+    model = [LinearLayer(1,100),ReLU_mod(),LinearLayer(100,10),Tanh(),LinearLayer(10,1)]
+    # model = [LinearLayer(1,200),ReLU_mod(),LinearLayer(200,200),Tanh(),LinearLayer(200,1)]
     # model = [LinearLayer(1,100),Tanh(),LinearLayer(100,10),Tanh(),LinearLayer(10,3),Tanh(),LinearLayer(3,3),Tanh(),LinearLayer(3,1)]
     loss = Quadratic_Loss()
+    # loss = L4_Loss()
     learning_rate = 0.00011
     errors = []
-    for index in range(5000):
+    for index in range(20000):
         error = 0
         for i in range(X.shape[0]):    
             x = np.array(X[i], ndmin=2)
-            # x.shape = (1,1)
             y = np.array(Y[i], ndmin=2)
-            # y.shape = (1,1)
 
             x_i = x
             for j in range(len(model)):
@@ -172,14 +188,12 @@ if __name__ == "__main__":
         for j in range(len(model)):
             model[j].update(learning_rate)        
             model[j].reset_grad()
-        # print( model[4].A)
         if index % 1000 == 0:
             print("Loss: ", error, " Index: ", index)
         errors.append(error)
 
         if np.isnan(error):
             break
-        # input()
 
     plt.plot(errors)
     plt.show()
