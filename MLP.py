@@ -52,10 +52,7 @@ class ReLU():
     def forward(self, X):
         self.X = X
         self.X_grad = np.zeros(self.X.shape)
-        Y = X
-        for i in range(x.shape[1]):
-            if X[0][i] <= 0:
-                Y[0][i] = 0
+        Y = np.where(X <= 0, 0, X) 
         return Y
 
     def reset_grad(self):
@@ -80,9 +77,7 @@ class ReLU_mod():
         self.X = X
         self.X_grad = np.zeros(self.X.shape)
         Y = X
-        for i in range(x.shape[1]):
-            if X[0][i] <= 0:
-                Y[0][i] = Y[0][i]*0.1
+        Y = np.where(X <= 0, X*0.1, X)
         return Y
 
     def reset_grad(self):
@@ -151,12 +146,12 @@ if __name__ == "__main__":
     Y_hat = np.zeros(Y.shape)       
     # model = [LinearLayer(1,1)]
     # model = [LinearLayer(1,2),LinearLayer(2,1)]
-    model = [LinearLayer(1,200),Tanh(),LinearLayer(200,200),Tanh(),LinearLayer(200,1)]
+    model = [LinearLayer(1,200),ReLU_mod(),LinearLayer(200,200),Tanh(),LinearLayer(200,1)]
     # model = [LinearLayer(1,100),Tanh(),LinearLayer(100,10),Tanh(),LinearLayer(10,3),Tanh(),LinearLayer(3,3),Tanh(),LinearLayer(3,1)]
     loss = Quadratic_Loss()
     learning_rate = 0.00011
     errors = []
-    for index in range(10000):
+    for index in range(5000):
         error = 0
         for i in range(X.shape[0]):    
             x = np.array(X[i], ndmin=2)
